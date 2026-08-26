@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from deep_translator import GoogleTranslator
+import translators as ts
 import openfoodfacts
 import conecao
 import re
@@ -13,17 +13,9 @@ origins = [
     "https://localhost.tiangolo.com",
     "http://localhost",
     "http://localhost:8080",
-    'http://192.168.1.67:8080',
-    'http://127.0.0.1:8080',
+    'http://192.168.1.65:8080',
+    'http://127.0.0.1:8080'
 ]
-
-class Produto(BaseModel):
-    idProduto: int
-    """quantidade: int
-    dataExpiracao: str
-    dataCompra: str
-    preco: float"""
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -33,14 +25,41 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class Produto(BaseModel):
+    idProduto: str
+    quantidade: int
+    dataExpiracao: str
+    dataCompra: str
+    preco: float
+
+
+
 api = openfoodfacts.API(user_agent="MyAwesomeApp/1.0")
 
 @app.post("/produto")
 async def produto(produto: Produto):
     mydb = conecao.sqlConnection().Connection()
     mycursor = mydb.cursor()
-    tradutorPT = GoogleTranslator(source="auto", target="pt")
-    produtoRecolhido = api.product.get(str(produto.idProduto), fields=["product_name_pt", "brands", "quantity", "categories_tags", "countries", "selected_images"])
-    categorias = [tradutorPT.translate(re.sub("en:", "", i)) for i in produtoRecolhido["categories_tags"]]
+    produtoRecolhido = api.product.get(produto.idProduto, fields=["product_name_pt", "brands", "product_quantity", "product_quantity_unit", "categories_tags", "countries", "selected_images"])
+    categorias = [ts.translate_text(re.sub("en:", "", i), translator='google', from_language='en', to_language='pt') for i in produtoRecolhido["categories_tags"]]
     imagem = produtoRecolhido["selected_images"]["front"]["display"]["pt"]
-    return produtoRecolhido
+    #print(api.product.get(produto.idProduto))
+
+    queryInserirProduto = 'INSERT INTO Produtos (codigoBarras, nome, marca, quantidade, unidade, imagem, localizacao) VALUES (%s,%s,%s,%s,%s,%s,%s)'
+    valoresProduto = (produto.idProduto, produtoRecolhido["product_name_pt"], produtoRecolhido["brands"], produtoRecolhido["product_quantity"], produtoRecolhido["product_quantity_unit"], imagem, produtoRecolhido["countries"])
+    mycursor.execute(queryInserirProduto, valoresProduto)
+
+    queryInserirCategoria = 'INSERT INTO Categorias (categorias) VALUES (%s)'
+    queryAssociarProdutoCategoria = 'INSERT INTO Produtos_has_Categorias (Produtos_idProdutos, Categorias_idCategorias) VALUES (%s,%s)'
+    for i in categorias:
+        mycursor.execute(queryInserirCategoria, (i, ))
+        idCategoria = mycursor.lastrowid
+        valoresProdutoCategorias = (produto.idProduto, idCategoria)
+        mycursor.execute(queryAssociarProdutoCategoria, valoresProdutoCategorias)
+
+    queryInserirInventario = 'INSERT INTO Inventário (Produtos_codigoBarras, quantidade, dataExpiracao, dataCompra, preco) VALUES (%s,%s,%s,%s,%s)'
+    valoresInventario = (produto.idProduto, produto.quantidade, produto.dataExpiracao, produto.dataCompra, produto.preco)
+    mycursor.execute(queryInserirInventario, valoresInventario)
+
+    mydb.commit()
+    mycursor.close()

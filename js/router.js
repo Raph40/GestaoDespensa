@@ -27,8 +27,6 @@ async function rotas() {
     // route = "teste.html"
     const route = routes[path]
 
-    console.log(path)
-
     // Vai buscar o ficheiro HTML correspondente.
     //
     // Por exemplo:
@@ -53,37 +51,21 @@ async function rotas() {
 // Escuta todos os cliques que acontecem no documento.
 document.addEventListener("click", (event) => {
 
-    // Verifica se o elemento clicado (ou algum dos seus pais)
-    // é um elemento que possui o atributo data-link.
-    //
-    // Exemplo:
-    // <a href="/inventario" data-link>Inventário</a>
-    //
-    // closest() devolve esse <a>.
+    // Verifica se o elemento clicado (ou algum dos seus pais) possui o atributo data-link.
     const link = event.target.closest("[data-link]");
 
+    // SE NÃO FOR UM LINK COM DATA-LINK, NÃO FAZ NADA E DEIXA O BROWSER AGIR NORMALMENTE
+    if (!link) {
+        return;
+    }
 
-    // Impede o comportamento normal do <a>.
-    //
-    // Normalmente, clicar num <a> faria o browser navegar
-    // para outra página e recarregaria o HTML.
-    //
-    // Numa SPA não queremos esse comportamento.
+    // Impede o comportamento normal do <a> (apenas para os links da SPA)
     event.preventDefault();
 
-
     // Altera o URL no browser sem recarregar a página.
-    //
-    // Exemplo:
-    // /dashboard
-    //      ↓
-    // /inventario
-    //
-    // O conteúdo da página ainda não mudou neste momento.
     history.pushState(null, "", link.href);
 
-
-    // Agora que o URL mudou, carregamos o conteúdo
-    // correspondente à nova rota.
     rotas();
 });
+
+window.addEventListener("DOMContentLoaded", rotas);

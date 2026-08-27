@@ -25,12 +25,12 @@ async function postProdutos() {
     })
     console.log("Status:", resposta.status);
 }
+function getInventario() {
+    console.log("funciona")
+}
 
-const data = new Date()
-
-let ano = data.getFullYear()
-let mes = data.toLocaleDateString("pt-Pt", {month: "long"})
-let dia = data.getDate()
-let diaSemana = data.toLocaleDateString("pt-Pt", {weekday: "long"})
-
-document.getElementById("data").textContent = `${diaSemana}, ${dia} de ${mes} ${ano}`
+async function getInventario() {
+    const resposta = await fetch("http://127.0.0.1:8000/getInventario")
+    const data = await resposta.json()
+    console.log(data)
+}

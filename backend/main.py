@@ -43,7 +43,6 @@ async def produto(produto: Produto):
     produtoRecolhido = api.product.get(produto.idProduto, fields=["product_name_pt", "brands", "product_quantity", "product_quantity_unit", "categories_tags", "countries", "selected_images"])
     categorias = [ts.translate_text(re.sub("en:", "", i), translator='google', from_language='en', to_language='pt') for i in produtoRecolhido["categories_tags"]]
     imagem = produtoRecolhido["selected_images"]["front"]["display"]["pt"]
-    #print(api.product.get(produto.idProduto))
 
     queryInserirProduto = 'INSERT INTO Produtos (codigoBarras, nome, marca, quantidade, unidade, imagem, localizacao) VALUES (%s,%s,%s,%s,%s,%s,%s)'
     valoresProduto = (produto.idProduto, produtoRecolhido["product_name_pt"], produtoRecolhido["brands"], produtoRecolhido["product_quantity"], produtoRecolhido["product_quantity_unit"], imagem, produtoRecolhido["countries"])
@@ -63,3 +62,22 @@ async def produto(produto: Produto):
 
     mydb.commit()
     mycursor.close()
+
+@app.get("/getInventario")
+async def getInventario():
+    mydb = conecao.sqlConnection().Connection()
+    mycursor = mydb.cursor()
+    queryInventario = 'SELECT idInventário, Produtos_codigoBarras, quantidade, dataExpiracao, dataCompra, preco FROM Inventário'
+    mycursor.execute(queryInventario)
+    infInventario = mycursor.fetchall()
+
+    jsonInventario = [{
+        "idInventário": i[0],
+        "Produtos_codigoBarras": i[1],
+        "quantidade": i[2],
+        "dataExpiracao": i[3],
+        "dataCompra": i[4],
+        "preco": i[5],
+    }for i in infInventario]
+
+    return jsonInventario

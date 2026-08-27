@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Página de Teste</title>
-    <script type="text/javascript" src="../js/script.js"></script>
+    <script type="text/javascript" src="../js/inventario.js"></script>
 </head>
 <body>
     <label for="inputProdutos">Codigo de Barras:</label>
@@ -17,5 +17,8 @@
     <label for="inputPreco">Preço:</label>
     <input type="number" id="inputPreco"/>
     <button onclick="postProdutos()">Inserir</button>
+
+    <div id="gridInventario"></div>
+    <button onclick="getInventario()">Teste</button>
 </body>
 </html>

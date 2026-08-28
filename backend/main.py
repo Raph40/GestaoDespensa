@@ -71,6 +71,10 @@ async def getInventario():
     mycursor.execute(queryInventario)
     infInventario = mycursor.fetchall()
 
+    queryProduto = 'SELECT imagem FROM Produtos'
+    mycursor.execute(queryProduto)
+    imagemProduto = mycursor.fetchall()
+
     jsonInventario = [{
         "idInventário": i[0],
         "Produtos_codigoBarras": i[1],
@@ -78,6 +82,7 @@ async def getInventario():
         "dataExpiracao": i[3],
         "dataCompra": i[4],
         "preco": i[5],
+        "imagem": imagemProduto
     }for i in infInventario]
 
     return jsonInventario

@@ -24,13 +24,31 @@ async function postProdutos() {
         }),
     })
     console.log("Status:", resposta.status);
-}
-function getInventario() {
-    console.log("funciona")
+    getInventario()
 }
 
 async function getInventario() {
     const resposta = await fetch("http://127.0.0.1:8000/getInventario")
     const data = await resposta.json()
-    console.log(data)
+    return await data
+}
+
+export async function listaInventario() {
+    let div = document.getElementById("gridInventario")
+    console.log(div)
+
+    let listaInf = await getInventario()
+
+    console.log(listaInf)
+
+    listaInf.forEach(produto => {
+        div.innerHTML += `
+            <p>Codigo de Barras: ${produto.Produtos_codigoBarras}</p>
+            <p>Quantidade: ${produto.quantidade}</p>
+            <p>Data de Validade: ${produto.dataExpiracao}</p>
+            <p>Produto adquirido: ${produto.dataCompra}</p>
+            <p>Preço: ${produto.preco}</p>
+            <img src="${produto.imagem} "/>
+        `
+    })
 }

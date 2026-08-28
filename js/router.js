@@ -1,3 +1,5 @@
+import { listaInventario } from "./inventario.js"
+
 // Tabela de rotas da nossa SPA.
 //
 // A chave é o URL que queremos utilizar
@@ -45,6 +47,11 @@ async function rotas() {
     // A página inteira não é recarregada.
     // Apenas o conteúdo de #main-page é substituído.
     document.getElementById("main-page").innerHTML = html
+
+    if (path === "/inventario") {
+        console.log("A chamar listaInventario")
+        listaInventario()
+    }
 }
 
 

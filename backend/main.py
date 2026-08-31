@@ -14,7 +14,9 @@ origins = [
     "http://localhost",
     "http://localhost:8080",
     'http://192.168.1.65:8080',
-    'http://127.0.0.1:8080'
+    'http://127.0.0.1:8080',
+    'http://192.168.1.65:3000',
+    'http://localhost:3000'
 ]
 
 app.add_middleware(
@@ -31,6 +33,7 @@ class Produto(BaseModel):
     dataExpiracao: str
     dataCompra: str
     preco: float
+    superMercado: str
 
 
 
@@ -56,8 +59,8 @@ async def produto(produto: Produto):
         valoresProdutoCategorias = (produto.idProduto, idCategoria)
         mycursor.execute(queryAssociarProdutoCategoria, valoresProdutoCategorias)
 
-    queryInserirInventario = 'INSERT INTO Inventário (Produtos_codigoBarras, quantidade, dataExpiracao, dataCompra, preco) VALUES (%s,%s,%s,%s,%s)'
-    valoresInventario = (produto.idProduto, produto.quantidade, produto.dataExpiracao, produto.dataCompra, produto.preco)
+    queryInserirInventario = 'INSERT INTO Inventário (Produtos_codigoBarras, quantidade, dataExpiracao, dataCompra, preco, localizacaoCompra) VALUES (%s,%s,%s,%s,%s,%s)'
+    valoresInventario = (produto.idProduto, produto.quantidade, produto.dataExpiracao, produto.dataCompra, produto.preco, produto.superMercado)
     mycursor.execute(queryInserirInventario, valoresInventario)
 
     mydb.commit()
@@ -67,7 +70,7 @@ async def produto(produto: Produto):
 async def getInventario():
     mydb = conecao.sqlConnection().Connection()
     mycursor = mydb.cursor()
-    queryInventario = 'SELECT idInventário, Produtos_codigoBarras, quantidade, dataExpiracao, dataCompra, preco FROM Inventário'
+    queryInventario = 'SELECT idInventário, Produtos_codigoBarras, quantidade, dataExpiracao, dataCompra, preco, localizacaoCompra FROM Inventário'
     mycursor.execute(queryInventario)
     infInventario = mycursor.fetchall()
 
@@ -82,7 +85,8 @@ async def getInventario():
         "dataExpiracao": i[3],
         "dataCompra": i[4],
         "preco": i[5],
-        "imagem": imagemProduto
+        "imagem": imagemProduto,
+        "superMercado": i[6],
     }for i in infInventario]
 
     return jsonInventario

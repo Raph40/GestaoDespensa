@@ -4,6 +4,7 @@ async function postProdutos() {
     let dataExpiracao = document.getElementById("inputDataExpiracao")
     let dataCompra = document.getElementById("inputDataCompra")
     let preco = document.getElementById("inputPreco")
+    let superMercado = document.getElementById("inputSuperMercado")
     console.log(typeof produto.value.toString())
     console.log(typeof parseInt(quantidade.value))
     console.log(typeof dataExpiracao.value)
@@ -20,7 +21,8 @@ async function postProdutos() {
             quantidade: parseInt(quantidade.value),
             dataExpiracao: dataExpiracao.value,
             dataCompra: dataCompra.value,
-            preco: parseFloat(preco.value)
+            preco: parseFloat(preco.value),
+            superMercado: superMercado.value
         }),
     })
     console.log("Status:", resposta.status);
@@ -43,12 +45,16 @@ export async function listaInventario() {
 
     listaInf.forEach(produto => {
         div.innerHTML += `
-            <p>Codigo de Barras: ${produto.Produtos_codigoBarras}</p>
-            <p>Quantidade: ${produto.quantidade}</p>
-            <p>Data de Validade: ${produto.dataExpiracao}</p>
-            <p>Produto adquirido: ${produto.dataCompra}</p>
-            <p>Preço: ${produto.preco}</p>
-            <img src="${produto.imagem} "/>
+            <div id="gridContainer">
+                <div id="card">
+                    <img src="${produto.imagem}" id="imagemInventario"/> 
+                    <p>Codigo de Barras: ${produto.Produtos_codigoBarras}</p>
+                    <p>Quantidade: ${produto.quantidade}</p>
+                    <p>Data de Validade: ${produto.dataExpiracao}</p>
+                    <p>Produto adquirido: ${produto.dataCompra}</p>
+                    <p>Preço: ${produto.preco}</p>
+                </div>
+            </div>
         `
     })
 }

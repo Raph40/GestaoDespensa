@@ -5,7 +5,6 @@ import { listaInventario } from "./inventario.js"
 // A chave é o URL que queremos utilizar
 // e o valor é o ficheiro HTML que deve ser carregado.
 const routes = {
-    "/dashboard": "teste.html",
     "/inventario": "inventario.html",
 }
 
@@ -22,6 +21,11 @@ async function rotas() {
     // Resultado: "/dashboard"
     const path = window.location.pathname
 
+    if (path === "/") {
+        document.getElementById("main-page").innerHTML = "";
+        return;
+    }
+
     // Procura no objeto "routes" qual é o HTML associado
     // ao caminho atual.
     //
@@ -29,16 +33,25 @@ async function rotas() {
     // route = "teste.html"
     const route = routes[path]
 
+    if (!route) {
+        return
+    }
+
     // Vai buscar o ficheiro HTML correspondente.
     //
     // Por exemplo:
     // fetch("paginas/teste.html")
     //
     // O fetch faz um pedido ao servidor para obter esse ficheiro.
-    const resposta = await fetch(`paginas/${route}`)
+    const resposta = await fetch(`/paginas/${route}`)
+    console.log(resposta)
 
     // Converte a resposta do servidor para texto HTML.
     const html = await resposta.text()
+
+    console.log("path:", path)
+    console.log("route:", route)
+    console.log("fetch:", `paginas/${route}`)
 
     // Coloca o HTML obtido dentro do elemento
     // com id="main-page".
@@ -76,3 +89,4 @@ document.addEventListener("click", (event) => {
 });
 
 window.addEventListener("DOMContentLoaded", rotas);
+window.addEventListener("popstate", rotas);

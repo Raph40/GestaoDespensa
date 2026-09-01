@@ -45,16 +45,34 @@ export async function listaInventario() {
 
     listaInf.forEach(produto => {
         div.innerHTML += `
-            <div id="gridContainer">
-                <div id="card">
-                    <img src="${produto.imagem}" id="imagemInventario"/> 
-                    <p>Codigo de Barras: ${produto.Produtos_codigoBarras}</p>
-                    <p>Quantidade: ${produto.quantidade}</p>
-                    <p>Data de Validade: ${produto.dataExpiracao}</p>
-                    <p>Produto adquirido: ${produto.dataCompra}</p>
-                    <p>Preço: ${produto.preco}</p>
-                </div>
-            </div>
+            <table class="custom-table">
+                <tr>
+                    <th>ID</th>
+                    <th>Imagem</th>
+                    <th>Produto</th>
+                    <th>Codigo de Barras</th>
+                    <th>Quantidade</th>
+                    <th>Produto adquirido</th>
+                    <th>Preço</th>
+                    <th>Data de Validade</th>
+                    <th>Ações</th>
+                </tr>
+                <tr>
+                    <td>${produto.idInventário}</td>
+                    <td><img src="${produto.imagem}" id="imagemInventario"/> </td>
+                    <td>${produto.nome}</td>
+                    <td>${produto.produtos_codigoBarras}</td>
+                    <td>${produto.quantidade}</td>
+                    <td>${produto.dataCompra}</td>
+                    <td>${produto.preco}€</td>
+                    <td>${produto.dataExpiracao}</td>
+                    <td id="acoesButtons">
+                        <button>Ver</button>
+                        <button>Editar</button>
+                        <button>Apagar</button>
+                    </td>
+                </tr>
+            </table>
         `
     })
 }

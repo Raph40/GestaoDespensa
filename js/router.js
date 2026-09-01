@@ -8,6 +8,24 @@ const routes = {
     "/inventario": "inventario.html",
 }
 
+function infHeader() {
+    const data = new Date()
+    const rota = window.location.pathname
+    const primeiraLetra = rota.charAt(1).toUpperCase() + rota.slice(2)
+
+    let ano = data.getFullYear()
+    let mes = data.toLocaleDateString("pt-Pt", {month: "long"})
+    let dia = data.getDate()
+    let diaSemana = data.toLocaleDateString("pt-Pt", {weekday: "long"})
+
+    document.getElementById("data").innerHTML = `
+        <div id="headerInf">
+            <h2>${primeiraLetra.replace("/","")}</h2>  
+            <h4>${diaSemana}, ${dia} de ${mes} ${ano}</h4>
+        </div>  
+    `
+}
+
 
 async function rotas() {
 
@@ -44,14 +62,9 @@ async function rotas() {
     //
     // O fetch faz um pedido ao servidor para obter esse ficheiro.
     const resposta = await fetch(`/paginas/${route}`)
-    console.log(resposta)
 
     // Converte a resposta do servidor para texto HTML.
     const html = await resposta.text()
-
-    console.log("path:", path)
-    console.log("route:", route)
-    console.log("fetch:", `paginas/${route}`)
 
     // Coloca o HTML obtido dentro do elemento
     // com id="main-page".
@@ -62,9 +75,10 @@ async function rotas() {
     document.getElementById("main-page").innerHTML = html
 
     if (path === "/inventario") {
-        console.log("A chamar listaInventario")
         listaInventario()
     }
+
+    infHeader()
 }
 
 
@@ -74,6 +88,8 @@ document.addEventListener("click", (event) => {
     // Verifica se o elemento clicado (ou algum dos seus pais) possui o atributo data-link.
     const link = event.target.closest("[data-link]");
 
+    const path = window.location.pathname
+
     // SE NÃO FOR UM LINK COM DATA-LINK, NÃO FAZ NADA E DEIXA O BROWSER AGIR NORMALMENTE
     if (!link) {
         return;
@@ -81,6 +97,10 @@ document.addEventListener("click", (event) => {
 
     // Impede o comportamento normal do <a> (apenas para os links da SPA)
     event.preventDefault();
+
+    if (link.getAttribute("href") === path) {
+        return
+    }
 
     // Altera o URL no browser sem recarregar a página.
     history.pushState(null, "", link.href);

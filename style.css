@@ -80,21 +80,33 @@ body{
     fill: var(--text-clr);
 }
 
-
-
-#card {
-    border: 3px solid #1e293b;
-    border-radius: 40px;
-    width: 95%;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    height: 15vh;
+.custom-table {
+    width: 98%;
+    border-collapse: collapse;
+    border: 2px solid #26293b;
     margin: 0 auto;
 }
 
+.custom-table th, .custom-table td {
+    padding: 5px;
+    border: 2px solid #26293b;
+    text-align: left;
+}
+
+.custom-table th {
+    background-color: #1a1c29;
+    color: #e2e4ec;
+    font-weight: 600;
+}
+
+#acoesButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
 #imagemInventario {
-    width: 18vh;
+    width: 15vh;
 }
 
 #toggle-btn {
@@ -112,6 +124,18 @@ body{
 
 #toggle-btn:hover {
     background-color: var(--hover-clr);
+}
+
+#headerInf {
+    display: flex;
+    height: 6.5vh;
+    align-items: center;
+    padding-left: 5%;
+}
+
+#headerInf h4 {
+    color: var(--text-clr);
+    padding-left: 30%;
 }
 
 @media(max-width: 800px){

@@ -1,15 +1,42 @@
-async function postProdutos() {
+async function postProdutos(event) {
     let produto = document.getElementById("inputProdutos")
     let quantidade = document.getElementById("inputQuantidade")
     let dataExpiracao = document.getElementById("inputDataExpiracao")
     let dataCompra = document.getElementById("inputDataCompra")
     let preco = document.getElementById("inputPreco")
     let superMercado = document.getElementById("inputSuperMercado")
-    console.log(typeof produto.value.toString())
-    console.log(typeof parseInt(quantidade.value))
-    console.log(typeof dataExpiracao.value)
-    console.log(typeof dataCompra.value)
-    console.log(typeof parseFloat(preco.value))
+
+    event.preventDefault();
+    const dataHoje = new Date()
+    const data = dataHoje.toISOString().split("T")[0];
+    console.log(produto.length);
+
+    if (produto.value.length !== 13) {
+        document.getElementById("inputProdutosError").textContent = "Campo deve conter 13 numeros"
+        document.getElementById("inputProdutosError").style.color = "red"
+    }
+
+    if (quantidade.value <= 0) {
+        document.getElementById("inputQuantidadeError").textContent = "Campo só aceita numeros positivos"
+        document.getElementById("inputQuantidadeError").style.color = "red"
+    }
+
+    if (dataExpiracao.value < data) {
+        document.getElementById("inputDataExpiracaoError").textContent = "Produto já com validade expirada"
+        document.getElementById("inputDataExpiracaoError").style.color = "red"
+    }
+
+    if (dataCompra.value > data) {
+        document.getElementById("inputDataCompraError").textContent = "Data Incorreta"
+        document.getElementById("inputDataCompraError").style.color = "red"
+    }
+
+    if (preco.value <= 0) {
+        document.getElementById("inputPrecoError").textContent = "Campo só aceita numeros positivos"
+        document.getElementById("inputPrecoError").style.color = "red"
+        return
+    }
+
     const resposta = await fetch("http://127.0.0.1:8000/produto", {
         method: "POST",
         headers: {
@@ -29,34 +56,17 @@ async function postProdutos() {
     getInventario()
 }
 
-async function getInventario() {
-    const resposta = await fetch("http://127.0.0.1:8000/getInventario")
-    const data = await resposta.json()
-    return await data
-}
-
 export async function listaInventario() {
-    let div = document.getElementById("gridInventario")
-    console.log(div)
+    let tabelaInf = document.getElementById("tableInventario")
 
-    let listaInf = await getInventario()
+    const resposta = await fetch("http://127.0.0.1:8000/getInventario")
+    const listaInf = await resposta.json()
 
     console.log(listaInf)
 
     listaInf.forEach(produto => {
-        div.innerHTML += `
+        tabelaInf.innerHTML += `
             <table class="custom-table">
-                <tr>
-                    <th>ID</th>
-                    <th>Imagem</th>
-                    <th>Produto</th>
-                    <th>Codigo de Barras</th>
-                    <th>Quantidade</th>
-                    <th>Produto adquirido</th>
-                    <th>Preço</th>
-                    <th>Data de Validade</th>
-                    <th>Ações</th>
-                </tr>
                 <tr>
                     <td>${produto.idInventário}</td>
                     <td><img src="${produto.imagem}" id="imagemInventario"/> </td>
@@ -67,7 +77,7 @@ export async function listaInventario() {
                     <td>${produto.preco}€</td>
                     <td>${produto.dataExpiracao}</td>
                     <td id="acoesButtons">
-                        <button>Ver</button>
+                        <button popovertarget="mypopoverVer" class="verProduto" data-id-produto="${produto.produtos_codigoBarras}">Ver</button>
                         <button>Editar</button>
                         <button>Apagar</button>
                     </td>
@@ -75,4 +85,40 @@ export async function listaInventario() {
             </table>
         `
     })
+
+    tabelaInf.addEventListener("click", async (event) => {
+        if (event.target.classList.contains("verProduto")) {
+            const infProdutos = event.target.getAttribute("data-id-produto")
+            console.log(infProdutos)
+            let campoInf = document.getElementById("mypopoverVer")
+            const resposta = await fetch("http://127.0.0.1:8000/getProduto", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                },
+                body: JSON.stringify({
+                    idProduto: infProdutos
+                }),
+            })
+            const produto = await resposta.json()
+            console.log(produto)
+
+
+            campoInf.innerHTML = `
+        <div>
+            <img src="${produto.imagem}" id="imagemInventario"/>
+            <p>${produto.nome}</p>
+            <p>${produto.codigoBarras}</p>
+            <p>${produto.localizacaoCompra}</p>
+            <p>${produto.marca}</p>
+            <p>${produto.quantidade}${produto.unidade}</p>
+            <p>${produto.Categorias}</p>
+        </div>
+    `
+        }
+    })
 }
+
+window.postProdutos = postProdutos
+

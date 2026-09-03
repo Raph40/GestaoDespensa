@@ -17,7 +17,6 @@ html{
 }
 body{
     min-height: 100vh;
-    min-height: 100dvh;
     background-color: var(--base-clr);
     color: var(--text-clr);
     display: grid;
@@ -84,7 +83,7 @@ body{
     width: 98%;
     border-collapse: collapse;
     border: 2px solid #26293b;
-    margin: 0 auto;
+    margin: 30px auto;
 }
 
 .custom-table th, .custom-table td {
@@ -99,6 +98,11 @@ body{
     font-weight: 600;
 }
 
+.custom-table th,
+.custom-table td {
+    text-align: center;
+}
+
 #acoesButtons {
     display: flex;
     flex-direction: column;
@@ -106,7 +110,8 @@ body{
 }
 
 #imagemInventario {
-    width: 15vh;
+    object-fit: cover;
+    height: 60px;
 }
 
 #toggle-btn {
@@ -136,6 +141,86 @@ body{
 #headerInf h4 {
     color: var(--text-clr);
     padding-left: 30%;
+}
+
+#mypopover {
+    position: fixed;
+    width: 40%;
+    margin: auto;
+    border-radius: 38px;
+}
+
+#mypopover:popover-open {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#caixaForm {
+    width: 80%;
+    padding: 30px 40px;
+}
+
+#caixaForm h2 {
+    margin-bottom: 25px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+form label {
+    font-weight: 500;
+}
+
+form input {
+    width: 100%;
+    box-sizing: border-box;
+
+    height: 42px;
+    padding: 8px 12px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    font-size: 1rem;
+    background-color: #fff;
+}
+
+form input:focus {
+    outline: none;
+    border-color: #64748b;
+}
+
+form button {
+    align-self: flex-end;
+
+    width: 120px;
+    height: 42px;
+
+    margin-top: 25px;
+
+    border: none;
+    border-radius: 8px;
+
+    background-color: #2563eb;
+    color: white;
+
+    font-size: 1rem;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #1d4ed8;
+}
+
+#mypopover::backdrop {
+    background-color: black;
+    opacity: 0.5;
 }
 
 @media(max-width: 800px){

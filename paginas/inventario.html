@@ -6,20 +6,57 @@
     <script type="text/javascript" src="../js/inventario.js"></script>
 </head>
 <body>
-    <label for="inputProdutos">Codigo de Barras:</label>
-    <input type="number" id="inputProdutos"/>
-    <label for="inputQuantidade">Quantidade:</label>
-    <input type="number" id="inputQuantidade"/>
-    <label for="inputDataExpiracao">Data de Expiração:</label>
-    <input type="date" id="inputDataExpiracao"/>
-    <label for="inputDataCompra">Data da Compra:</label>
-    <input type="date" id="inputDataCompra"/>
-    <label for="inputPreco">Preço:</label>
-    <input type="number" id="inputPreco"/>
-    <label for="inputSuperMercado">SuperMercado:</label>
-    <input type="number" id="inputSuperMercado"/>
-    <button onclick="postProdutos()">Inserir</button>
+    <button popovertarget="mypopover">Adicionar Produto</button>
+    <div id="mypopover" popover>
+        <div id="caixaForm">
+            <h2>Adicionar Produto</h2>
+            <form>
+                <label for="inputProdutos">Codigo de Barras:</label>
+                <input type="number" id="inputProdutos" required/>
+                <p id="inputProdutosError"></p>
 
-    <div id="gridInventario"></div>
+                <label for="inputQuantidade">Quantidade:</label>
+                <input type="number" id="inputQuantidade" required/>
+                <p id="inputQuantidadeError"></p>
+
+                <label for="inputDataExpiracao">Data de Expiração:</label>
+                <input type="date" id="inputDataExpiracao" required/>
+                <p id="inputDataExpiracaoError"></p>
+
+                <label for="inputDataCompra">Data da Compra:</label>
+                <input type="date" id="inputDataCompra" required/>
+                <p id="inputDataCompraError"></p>
+
+                <label for="inputPreco">Preço:</label>
+                <input type="number" id="inputPreco" required/>
+                <p id="inputPrecoError"></p>
+
+                <label for="inputSuperMercado">SuperMercado:</label>
+                <input type="text" id="inputSuperMercado" required/>
+
+                <button onclick="postProdutos(event)">Inserir</button>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <table id="tableInventario" class="custom-table">
+            <tr>
+                <th>ID</th>
+                <th>Imagem</th>
+                <th>Produto</th>
+                <th>Codigo de Barras</th>
+                <th>Quantidade</th>
+                <th>Produto adquirido</th>
+                <th>Preço</th>
+                <th>Data de Validade</th>
+                <th>Ações</th>
+            </tr>
+        </table>
+    </div>
+
+    <div id="mypopoverVer" popover>
+
+    </div>
 </body>
 </html>

@@ -62,9 +62,19 @@ export async function listaInventario() {
     const resposta = await fetch("http://127.0.0.1:8000/getInventario")
     const listaInf = await resposta.json()
 
-    console.log(listaInf)
-
     listaInf.forEach(produto => {
+        let validade = validadeDias(produto.dataExpiracao)
+
+        let cor
+
+        if (validade <= 0) {
+            cor = "red";
+        } else if (validade <= 7) {
+            cor = "yellow";
+        } else {
+            cor = "green";
+        }
+
         tabelaInf.innerHTML += `
             <table class="custom-table">
                 <tr>
@@ -74,8 +84,9 @@ export async function listaInventario() {
                     <td>${produto.produtos_codigoBarras}</td>
                     <td>${produto.quantidade}</td>
                     <td>${produto.dataCompra}</td>
+                    <td>${produto.superMercado}</td>
                     <td>${produto.preco}€</td>
-                    <td>${produto.dataExpiracao}</td>
+                    <td style="color: ${cor}">${validade}</td>
                     <td id="acoesButtons">
                         <button popovertarget="mypopoverVer" class="verProduto" data-id-produto="${produto.produtos_codigoBarras}">Ver</button>
                         <button>Editar</button>
@@ -84,6 +95,8 @@ export async function listaInventario() {
                 </tr>
             </table>
         `
+
+
     })
 
     tabelaInf.addEventListener("click", async (event) => {
@@ -102,22 +115,51 @@ export async function listaInventario() {
                 }),
             })
             const produto = await resposta.json()
-            console.log(produto)
+            const listaInfVer = listaInf.find(x => x.produtos_codigoBarras === infProdutos)
 
+            let faltaDias = validadeDias(listaInfVer.dataExpiracao)
+            console.log(faltaDias)
 
             campoInf.innerHTML = `
-        <div>
-            <img src="${produto.imagem}" id="imagemInventario"/>
-            <p>${produto.nome}</p>
-            <p>${produto.codigoBarras}</p>
-            <p>${produto.localizacaoCompra}</p>
-            <p>${produto.marca}</p>
-            <p>${produto.quantidade}${produto.unidade}</p>
-            <p>${produto.Categorias}</p>
-        </div>
-    `
+                <div>
+                    <div>
+                        <img src="${produto.imagem}" id="imagemInventario"/>
+                    </div>
+                    <div>
+                        <p>${produto.nome}</p>
+                        <p>${produto.marca}</p>
+                    </div>
+                    <div>
+                        <p>${produto.codigoBarras}</p>
+                    </div>
+                    <div>
+                        <p>${produto.quantidade}</p>
+                        <p>${produto.unidade}</p>
+                        <p>${produto.localizacaoCompra}</p>
+                    </div>
+                    <div>
+                        <p>${listaInfVer.superMercado}</p>
+                    </div>
+                    <div>
+                        <p>${listaInfVer.dataCompra}</p>
+                        <p>${listaInfVer.dataExpiracao}</p>
+                        <p>${faltaDias}</p>
+                    </div>
+                    
+                    <p>${produto.Categorias}</p>
+                </div>
+            `
         }
     })
+}
+
+function validadeDias(diaExpiracao) {
+    const hoje = new Date();
+    const expiracao = new Date(diaExpiracao);
+
+    const diferenca = expiracao - hoje;
+
+    return Math.ceil(diferenca / (1000 * 60 * 60 * 24));
 }
 
 window.postProdutos = postProdutos

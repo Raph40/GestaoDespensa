@@ -223,6 +223,11 @@ form button:hover {
     opacity: 0.5;
 }
 
+#mypopoverVer::backdrop {
+    background-color: black;
+    opacity: 0.5;
+}
+
 @media(max-width: 800px){
     body{
         grid-template-columns: 1fr;

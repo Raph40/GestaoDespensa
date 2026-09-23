@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
 import translators as ts
@@ -15,7 +15,7 @@ origins = [
     "http://localhost:8080",
     'http://192.168.1.65:8080',
     'http://127.0.0.1:8080',
-    'http://192.168.1.65:3000',
+    'http://192.168.1.71:3000',
     'http://localhost:3000'
 ]
 
@@ -38,6 +38,14 @@ class Produto(BaseModel):
 class verProduto(BaseModel):
     idProduto: str = Field(min_length=1, max_length=13)
 
+class editarProduto(BaseModel):
+    idProduto: str = Field(min_length=1, max_length=13)
+    imagem: str | bytes
+    quantidade: int = Field(gt=0)
+    dataExpiracao: str = Field(min_length=1)
+    dataCompra: str = Field(min_length=1)
+    preco: float | int = Field(gt=0)
+    superMercado: str = Field(min_length=1)
 
 
 api = openfoodfacts.API(user_agent="MyAwesomeApp/1.0")
@@ -134,3 +142,19 @@ async def getProduto(produto: verProduto):
     }
 
     return infProdutoTotal
+
+@app.post("/putProduto")
+async def putProduto(produto: editarProduto):
+    print(produto)
+    mydb = conecao.sqlConnection().Connection()
+    mycursor = mydb.cursor()
+    queryUpdateProduto = 'UPDATE Inventário SET quantidade = %s, dataExpiracao = %s, dataCompra = %s, preco = %s, localizacaoCompra = %s WHERE Produtos_codigoBarras = %s'
+    valores = (produto.quantidade, produto.dataExpiracao, produto.dataCompra, produto.preco, produto.superMercado, produto.idProduto)
+    mycursor.execute(queryUpdateProduto, valores)
+
+    queryUpdateProdutoImagem = 'UPDATE Produtos SET imagem = %s WHERE codigoBarras = %s'
+    valores = (produto.imagem, produto.idProduto)
+    mycursor.execute(queryUpdateProdutoImagem, valores)
+
+    mydb.commit()
+    mycursor.close()

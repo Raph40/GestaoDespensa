@@ -223,9 +223,171 @@ form button:hover {
     opacity: 0.5;
 }
 
+#mypopoverVer {
+    position: fixed;
+    width: 70%;
+    margin: auto;
+    border-radius: 38px;
+}
+
 #mypopoverVer::backdrop {
     background-color: black;
     opacity: 0.5;
+}
+
+#mypopoverVer:popover-open {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+imagemVer {
+    width: 100%;
+    height: 100%;
+}
+
+#mypopoverEditar {
+    position: fixed;
+    width: 70%;
+    margin: auto;
+    border-radius: 38px;
+}
+
+#mypopoverEditar::backdrop {
+    background-color: black;
+    opacity: 0.5;
+}
+
+#mypopoverEditar:popover-open {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 1. O contentor principal (a linha preta mais exterior do teu esboço) */
+.cartao-produto {
+    padding: 30px; /* Espaço entre a borda e o conteúdo dentro dela */
+    width: 90%; /* Largura total do cartão (podes ajustar) */
+    font-family: Arial, sans-serif; /* Tipo de letra simples */
+}
+
+/* 2. A caixa interior (a linha preta que envolve a imagem e os textos) */
+.caixa-superior {
+    padding: 20px;
+
+    /* O display flex aqui coloca o .container-imagem e a .informacao lado a lado */
+    display: flex;
+    gap: 40px; /* Espaço entre a imagem e os textos */
+}
+
+/* 3. A caixa específica da imagem */
+.container-imagem {
+    width: 250px;
+    height: 250px;
+
+    /* Centraliza o texto "IMAGEM" ou a imagem caso ela não ocupe o espaço todo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Garante que a imagem não ultrapassa a caixa */
+.container-imagem img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* 4. O bloco que contém todos os textos à direita */
+.informacao {
+    display: flex;
+    flex-direction: column; /* Coloca as linhas umas debaixo das outras */
+    justify-content: space-around; /* Distribui o espaço verticalmente de forma igual */
+    width: 100%;
+}
+
+/* 5. Cada linha individual de texto (Nome/Marca, Datas, etc.) */
+.linha {
+    display: flex; /* Coloca os <p> desta linha lado a lado */
+    gap: 50px; /* Espaço horizontal entre Nome e Marca, etc. */
+}
+
+/* Remove a margem que os parágrafos (<p>) têm por defeito para ficar mais alinhado */
+.linha p {
+    margin: 0;
+}
+
+/* 6. Estilo para a secção cá de baixo (Categorias) */
+.seccao-inferior {
+    margin-top: 30px; /* Afasta as categorias da caixa superior */
+    padding-left: 20px; /* Alinha um pouco mais à direita como no desenho */
+}
+
+.seccao-inferior p {
+    margin: 10px 0;
+}
+
+
+
+#caixaFormEditar {
+    padding: 40px; /* espaço entre o conteúdo e a borda do popup */
+    box-sizing: border-box;
+}
+
+.linhaEditar {
+    display: flex;
+    gap: 40px; /* espaço entre a caixa da imagem e a do formulário */
+    align-items: stretch;
+}
+
+.caixaImagem,
+.caixaCampos {
+    /* sem border aqui — era só pra visualizar no mockup */
+    border-radius: 6px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.caixaImagem {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+#imagemVerEditar {
+    width: 100%;
+    max-height: 220px;
+    object-fit: contain;
+    margin-bottom: 15px;
+}
+
+.caixaCampos {
+    flex: 1.5;
+    display: flex;
+    flex-direction: column;
+}
+
+.caixaCampos label {
+    margin-top: 20px; /* espaço entre um campo e o próximo */
+    margin-bottom: 8px; /* espaço entre o label e o seu input */
+    font-weight: 600;
+    display: block;
+}
+
+.caixaCampos label:first-of-type {
+    margin-top: 0; /* o primeiro label não precisa de espaço extra em cima */
+}
+
+.caixaCampos input {
+    padding: 10px 12px;
+    box-sizing: border-box;
+}
+
+.caixaCampos p {
+    margin: 4px 0 0;
+    font-size: 0.85em;
 }
 
 @media(max-width: 800px){

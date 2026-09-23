@@ -52,7 +52,6 @@ async function postProdutos(event) {
             superMercado: superMercado.value
         }),
     })
-    console.log("Status:", resposta.status);
     getInventario()
 }
 
@@ -61,6 +60,7 @@ export async function listaInventario() {
 
     const resposta = await fetch("http://127.0.0.1:8000/getInventario")
     const listaInf = await resposta.json()
+    console.log(listaInf)
 
     listaInf.forEach(produto => {
         let validade = validadeDias(produto.dataExpiracao)
@@ -89,7 +89,7 @@ export async function listaInventario() {
                     <td style="color: ${cor}">${validade}</td>
                     <td id="acoesButtons">
                         <button popovertarget="mypopoverVer" class="verProduto" data-id-produto="${produto.produtos_codigoBarras}">Ver</button>
-                        <button>Editar</button>
+                        <button popovertarget="mypopoverEditar" class="editarProduto" data-id-produto-editar="${produto.produtos_codigoBarras}">Editar</button>
                         <button>Apagar</button>
                     </td>
                 </tr>
@@ -102,7 +102,6 @@ export async function listaInventario() {
     tabelaInf.addEventListener("click", async (event) => {
         if (event.target.classList.contains("verProduto")) {
             const infProdutos = event.target.getAttribute("data-id-produto")
-            console.log(infProdutos)
             let campoInf = document.getElementById("mypopoverVer")
             const resposta = await fetch("http://127.0.0.1:8000/getProduto", {
                 method: "POST",
@@ -118,39 +117,134 @@ export async function listaInventario() {
             const listaInfVer = listaInf.find(x => x.produtos_codigoBarras === infProdutos)
 
             let faltaDias = validadeDias(listaInfVer.dataExpiracao)
-            console.log(faltaDias)
 
             campoInf.innerHTML = `
-                <div>
-                    <div>
-                        <img src="${produto.imagem}" id="imagemInventario"/>
+                <div class="cartao-produto">
+                    <div class="caixa-superior">
+                        <div class="container-imagem">
+                            <img src="${produto.imagem}" id="imagemVer" alt="Imagem"/>
+                        </div>
+                        <div class="informacao">
+                            <div class="linha">
+                                <h2>${produto.nome} - ${produto.marca}</h2>
+                            </div>
+                            <div class="linha">
+                                <p>Codigo de Barras: ${produto.codigoBarras}</p>
+                            </div>
+                            <div class="linha">
+                                <p>Quantidade: ${produto.quantidade}${produto.unidade}</p>
+                                <p>Origem: ${produto.localizacaoCompra} - ${listaInfVer.superMercado}</p>
+                            </div>
+                            <div class="linha">
+                                <p>Data da Compra: ${listaInfVer.dataCompra}</p>
+                                <p>Data da Validade: ${listaInfVer.dataExpiracao}</p>
+                                <p>${faltaDias}</p>
+                            </div>
+                        </div>
+                        
                     </div>
-                    <div>
-                        <p>${produto.nome}</p>
-                        <p>${produto.marca}</p>
-                    </div>
-                    <div>
-                        <p>${produto.codigoBarras}</p>
-                    </div>
-                    <div>
-                        <p>${produto.quantidade}</p>
-                        <p>${produto.unidade}</p>
-                        <p>${produto.localizacaoCompra}</p>
-                    </div>
-                    <div>
-                        <p>${listaInfVer.superMercado}</p>
-                    </div>
-                    <div>
-                        <p>${listaInfVer.dataCompra}</p>
-                        <p>${listaInfVer.dataExpiracao}</p>
-                        <p>${faltaDias}</p>
-                    </div>
-                    
-                    <p>${produto.Categorias}</p>
+                    <div class="seccao-inferior">
+                        <h1>Categorias</h1>
+                        <p>${produto.Categorias}</p>
+                    </div> 
                 </div>
             `
+        } else if (event.target.classList.contains("editarProduto")) {
+            const infProdutos = event.target.getAttribute("data-id-produto-editar")
+            let campoInf = document.getElementById("mypopoverEditar")
+            const resposta = await fetch("http://127.0.0.1:8000/getInventario")
+            const produto = await resposta.json()
+            const listaInfEditar = produto.find(x => x.produtos_codigoBarras === infProdutos)
+
+            campoInf.innerHTML = `
+                <div id="caixaFormEditar">
+                    <h2>Editar Produto</h2>
+                    <form>
+                        <div class="linhaEditar">
+                            <div class="caixaImagem">
+                                <img src="${listaInfEditar.imagem}" id="imagemVerEditar"/>
+                                <label for="editarImagem">Selecione uma imagem:</label>
+                                <input type="file" id="editarImagem" name="imagem" accept="image/*"/>
+                            </div>
+                
+                            <div class="caixaCampos">
+                                <label for="editarQuantidade">Quantidade:</label>
+                                <input type="number" id="editarQuantidade" value="${listaInfEditar.quantidade}" required/>
+                                <p id="inputQuantidadeError"></p>
+                
+                                <label for="editarDataExpiracao">Data de Expiração:</label>
+                                <input type="date" id="editarDataExpiracao" value="${listaInfEditar.dataExpiracao}" required/>
+                                <p id="inputDataExpiracaoError"></p>
+                
+                                <label for="editarDataCompra">Data da Compra:</label>
+                                <input type="date" id="editarDataCompra" value="${listaInfEditar.dataExpiracao}" required/>
+                                <p id="inputDataCompraError"></p>
+                
+                                <label for="editarPreco">Preço:</label>
+                                <input type="number" id="editarPreco" value="${listaInfEditar.preco}" required/>
+                                <p id="inputPrecoError"></p>
+                
+                                <label for="editarSuperMercado">SuperMercado:</label>
+                                <input type="text" id="editarSuperMercado" value="${listaInfEditar.superMercado}" required/>
+                            </div>
+                        </div>
+                
+                        <button type="button" id="atualizarProduto">Atualizar dados</button>
+                    </form>
+                </div>
+            `
+            document.getElementById("atualizarProduto").addEventListener("click", (event) => {
+                atualizarProdutos(event, listaInfEditar.produtos_codigoBarras, listaInfEditar.imagem)
+            })
         }
     })
+}
+
+async function atualizarProdutos(event, codigoBarras, imagem){
+    let quantidade = document.getElementById("editarQuantidade").value
+    let dataExpiracao = document.getElementById("editarDataExpiracao").value
+    let dataCompra = document.getElementById("editarDataCompra").value
+    let preco = document.getElementById("editarPreco").value
+    let superMercado = document.getElementById("editarSuperMercado").value
+    let imagemNova = document.getElementById("editarImagem").files
+    console.log(imagem[0][0])
+    if (imagemNova.item(0)) {
+        await fetch("http://127.0.0.1:8000/putProduto", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify({
+                idProduto: codigoBarras.toString(),
+                imagem: imagemNova.item(0),
+                quantidade: parseInt(quantidade),
+                dataExpiracao: dataExpiracao,
+                dataCompra: dataCompra,
+                preco: parseFloat(preco),
+                superMercado: superMercado
+            }),
+        })
+        location.reload();
+    } else {
+        await fetch("http://127.0.0.1:8000/putProduto", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify({
+                idProduto: codigoBarras.toString(),
+                imagem: imagem.toString(),
+                quantidade: parseInt(quantidade),
+                dataExpiracao: dataExpiracao,
+                dataCompra: dataCompra,
+                preco: parseFloat(preco),
+                superMercado: superMercado
+            }),
+        })
+        location.reload();
+    }
 }
 
 function validadeDias(diaExpiracao) {
@@ -163,4 +257,5 @@ function validadeDias(diaExpiracao) {
 }
 
 window.postProdutos = postProdutos
+window.atualizarProdutos = atualizarProdutos
 
